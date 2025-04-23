@@ -12,7 +12,7 @@ public class BlkQueueImpl<T> implements BlkQueue<T> {
 
     @Override
     public synchronized void push(T message) {
-        while (this.queue.size() == maxSize){
+        while (this.queue.size() >= maxSize){
             try {
                 this.wait();
             } catch (InterruptedException e) {
@@ -33,9 +33,8 @@ public class BlkQueueImpl<T> implements BlkQueue<T> {
                 throw new RuntimeException(e);
             }
         }
-        T message = queue.removeFirst();
+        T message = queue.poll();
         notifyAll();
         return message;
-
     }
 }

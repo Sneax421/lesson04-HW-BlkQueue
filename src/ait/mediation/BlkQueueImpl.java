@@ -8,12 +8,11 @@ public class BlkQueueImpl<T> implements BlkQueue<T> {
 
     public BlkQueueImpl(int maxSize) {
         this.maxSize = maxSize;
-        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public void push(T message) {
-        while (this.queue.size() != maxSize){
+    public synchronized void push(T message) {
+        while (this.queue.size() == maxSize){
             try {
                 this.wait();
             } catch (InterruptedException e) {
@@ -22,11 +21,11 @@ public class BlkQueueImpl<T> implements BlkQueue<T> {
         }
         this.queue.add(message);
         notify();
-        throw new UnsupportedOperationException("Not implemented");
+
     }
 
     @Override
-    public T pop() {
+    public synchronized T pop() {
         while (queue.isEmpty()){
             try {
                 this.wait();
@@ -34,7 +33,9 @@ public class BlkQueueImpl<T> implements BlkQueue<T> {
                 throw new RuntimeException(e);
             }
         }
+        T message = queue.removeFirst();
+        notifyAll();
+        return message;
 
-        throw new UnsupportedOperationException("Not implemented");
     }
 }
